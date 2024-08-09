@@ -1,11 +1,17 @@
 <script setup>
+const props = defineProps(['id', 'data'])
 
 </script>
 
 <template>
   <div class="main">
     <div class="text-center">
-      <q-icon size="24px" color="blue" name="account_box" />
+      <q-icon
+        size="24px"
+        color="blue"
+        name="account_box"
+      />
+      {{data.label}}
     </div>
   </div>
 

@@ -1,40 +1,47 @@
 import { MarkerType } from '@vue-flow/core'
 import { Position } from '@vue-flow/core'
 
+const position = { x: 0, y: 0 }
+
 export const initialNodes = [
   {
     id: '1',
     type: 'menu',
-    data: { label: 'Node 1', toolbarPosition: Position.Bottom  },
-    position: { x: 0, y: 0 },
+    data: { label: 'Node 1', toolbarPosition: Position.Top  },
+    position,
+    draggable: false,
     class: 'light'
   },
   {
     id: '2',
     type: 'menu',
-    data: { label: 'Node 2', toolbarPosition: Position.Bottom },
-    position: { x: 100, y: 160 },
+    data: { label: 'Node 2', toolbarPosition: Position.Top },
+    position,
+    draggable: false,
     class: 'light',
   },
   {
     id: '3',
     type: 'menu',
-    data: { label: 'Node 3', toolbarPosition: Position.Bottom},
-    position: { x: 400, y: 250 },
+    data: { label: 'Node 3', toolbarPosition: Position.Top},
+    position,
+    draggable: false,
     class: 'light',
   },
   {
     id: '4',
     type: 'menu',
-    data: { label: 'Node 4', toolbarPosition: Position.Bottom },
-    position: { x: 150, y: 350 },
+    data: { label: 'Node 4', toolbarPosition: Position.Top },
+    position,
+    draggable: false,
     class: 'light',
   },
   {
     id: '5',
     type: 'menu',
-    data: { label: 'Node 5', toolbarPosition: Position.Bottom },
-    position: { x: 300, y: 550 },
+    data: { label: 'Node 5', toolbarPosition: Position.Top },
+    position,
+    draggable: false,
     class: 'light',
   },
 ]

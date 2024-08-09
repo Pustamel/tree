@@ -2,34 +2,34 @@
   setup
   lang="ts"
 >
-import {initialEdges, initialNodes} from '@/components/initial-elements.js'
-import {ref} from "vue";
+import {initialEdges, initialNodes} from '@/pages/tree/utils/initial-elements.js'
+import {nextTick, ref} from "vue";
 import {ControlButton, Controls} from '@vue-flow/controls'
 import {VueFlow, useVueFlow, Position} from '@vue-flow/core'
 import {Background} from '@vue-flow/background'
 
-import Icon from './Icon.vue'
-import OneItem from "@/components/NodeItem.vue";
-import ToolbarItem from "@/components/ToolbarItem.vue";
+import Icon from './utils/Icon.vue'
+import OneItem from "@/pages/tree/components/NodeItem.vue";
+import ToolbarItem from "@/pages/tree/components/ToolbarItem.vue";
+import { useLayout } from './utils/useLayout'
+import { useRunProcess } from './utils/useRunProcess'
 
-const {onInit, onNodeDragStop, onConnect, addEdges, setViewport, toObject} = useVueFlow()
+const {onInit, onConnect, addEdges, setViewport, toObject, fitView} = useVueFlow()
+const { graph, layout } = useLayout()
+const cancelOnError = ref(true)
+const { run, stop, reset, isRunning } = useRunProcess({ graph, cancelOnError })
 
 const nodes = ref(initialNodes)
-
 const edges = ref(initialEdges)
-
-// our dark mode toggle flag
 const dark = ref(false)
+
 
 onInit((vueFlowInstance) => {
   vueFlowInstance.fitView()
 })
 
-onNodeDragStop(({event, nodes, node}) => {
-  console.log('Node Drag Stop', {event, nodes, node})
-})
-
 onConnect((connection) => {
+  console.log('connection:',connection)
   addEdges(connection)
 })
 
@@ -46,16 +46,10 @@ function updatePos () {
   })
 }
 
-/**
- * toObject transforms your current graph data to an easily persist-able object
- */
 function logToObject () {
   console.log(toObject())
 }
 
-/**
- * Resets the current viewport transformation (zoom & pan)
- */
 function resetTransform () {
   setViewport({x: 0, y: 0, zoom: 1})
 }
@@ -64,6 +58,40 @@ function toggleDarkMode () {
   dark.value = !dark.value
 }
 
+function createKinship(current) {
+  const currentId = current.id
+  const lastNode = nodes.value[nodes.value.length - 1]
+  const newId = lastNode.id + 1
+  nodes.value.push({
+    id: newId,
+    type: 'menu',
+    data: { label: 'Node 6', toolbarPosition: Position.Bottom },
+    position: { x: 0, y: 0 },
+    class: 'light',
+  })
+
+  const lastEdges = edges.value[edges.value.length - 1]
+  const newIdEdge = lastEdges.id + 1
+  edges.value.push( {
+    id: 'e1-2' + newIdEdge + 1,
+    source: currentId,
+    type: 'step',
+    target: newId,
+  },)
+}
+
+
+async function layoutGraph(direction) {
+  await stop()
+
+  reset(nodes.value)
+
+  nodes.value = layout(nodes.value, edges.value, direction)
+
+  await nextTick(() => {
+    fitView()
+  })
+}
 
 </script>
 
@@ -77,19 +105,10 @@ function toggleDarkMode () {
     :min-zoom="0.2"
     :max-zoom="4"
     fit-view-on-init
+    @nodes-initialized="layoutGraph('TD')"
   >
     <template #node-menu="props">
-      <ToolbarItem :id="props.id" :data="props.data" />
-    </template>
-
-    <template #node-input>
-      <OneItem />
-    </template>
-    <template #node-default>
-      <OneItem />
-    </template>
-    <template #node-output>
-      <OneItem />
+      <ToolbarItem @create="createKinship" :id="props.id" :data="props.data" />
     </template>
 
     <Background
