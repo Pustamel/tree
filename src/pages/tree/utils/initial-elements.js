@@ -36,42 +36,13 @@ export const initialNodes = [
     draggable: false,
     class: 'light',
   },
-  {
-    id: '5',
-    type: 'menu',
-    data: { label: 'Node 5', toolbarPosition: Position.Top },
-    position,
-    draggable: false,
-    class: 'light',
-  },
 ]
 
 export const initialEdges = [
-  {
-    id: 'e1-2',
-    source: '1',
-    type: 'step',
-    target: '2',
-  },
-  {
-    id: 'e1-3',
-    source: '1',
-    type: 'step',
-    target: '3',
-    markerEnd: MarkerType.ArrowClosed,
-  },
-  {
-    id: 'e4-5',
-    type: 'step',
-    source: '4',
-    target: '5',
-    style: { stroke: 'orange' },
-    labelBgStyle: { fill: 'orange' },
-  },
-  {
-    id: 'e3-4',
-    type: 'smoothstep',
-    source: '3',
-    target: '4',
-  },
+  { id: 'e1-2', source: '1', target: '3', type: 'step', animated: false },
+
+  { id: 'e5-8', source: '2', target: '3', type: 'step', animated: false },
+
+  { id: 'e5-9', source: '1', target: '4', type: 'step', animated: false },
+  { id: 'e5-11', source: '2', target: '4', type: 'step', animated: false },
 ]
