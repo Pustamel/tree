@@ -1,21 +1,29 @@
-<script setup>
+<script setup lang="ts">
 import { Handle, Position, useVueFlow } from '@vue-flow/core'
 import { NodeToolbar } from '@vue-flow/node-toolbar'
 import NodeItem from '@/pages/tree/components/NodeItem.vue'
 import { ref } from 'vue'
+import Kinship from '@/pages/tree/components/dialogs/Kinship.vue'
+import Edit from '@/pages/tree/components/dialogs/EditPerson.vue'
+import type { Kinship as KinshipType} from '@/pages/tree/utils/types'
 
 const props = defineProps(['id', 'data'])
 const addModal = ref(false)
+const editModal = ref(false)
 const emit = defineEmits(['create'])
 
 const { updateNodeData } = useVueFlow()
 
-function toggleAdd () {
+function toggleAdd ():void {
   addModal.value = !addModal.value
 }
 
-function createKinship() {
-  emit('create', props)
+function toggleEdit ():void {
+  editModal.value = !editModal.value
+}
+
+function createKinship (member: KinshipType):void {
+  emit('create', { ...props, ...member })
 }
 
 </script>
@@ -23,46 +31,37 @@ function createKinship() {
 <template>
   <NodeToolbar
     class="toolbar"
-    offset="1"
+    :offset="1"
     :is-visible="data.toolbarVisible"
     :position="data.toolbarPosition"
   >
     <div>
       <q-btn
-        size="xs"
+        @click="toggleAdd"
+        size="10"
         round
         flat
         icon="add"
-        @click="toggleAdd"
       />
       <q-btn
-        size="xs"
+        @click="toggleEdit"
+        size="10"
         round
         flat
         icon="edit"
       />
     </div>
-    <q-dialog v-model="addModal">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Добавить родство</div>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn @click="createKinship" flat label="OK" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <Kinship
+      v-model:addModal="addModal"
+      @create="createKinship"
+      :data="data"
+    />
+    <Edit v-model:edit="editModal" />
   </NodeToolbar>
 
-  <NodeItem :data="data" :id="id"/>
-
-  <Handle
-    type="target"
-    :position="Position.Top"
-  />
-  <Handle
-    type="source"
-    :position="Position.Bottom"
+  <NodeItem
+    :data="data"
+    :id="id"
   />
 </template>
 
@@ -83,10 +82,13 @@ function createKinship() {
   .vue-flow__node-menu.selected {
     box-shadow: 0 0 0 2px #2563eb;
   }
-</style>
-
-<style>
   .vue-flow__node-menu {
     padding: 0 !important;
+  }
+</style>
+
+<style scoped>
+  .dialog-kinship {
+    width: 400px !important;
   }
 </style>

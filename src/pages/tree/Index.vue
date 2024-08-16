@@ -2,25 +2,28 @@
   setup
   lang="ts"
 >
+// @ts-ignore
 import {initialEdges, initialNodes} from '@/pages/tree/utils/initial-elements.js'
 import {nextTick, ref} from "vue";
 import {ControlButton, Controls} from '@vue-flow/controls'
 import {VueFlow, useVueFlow, Position} from '@vue-flow/core'
 import {Background} from '@vue-flow/background'
-
-import Icon from './utils/Icon.vue'
-import OneItem from "@/pages/tree/components/NodeItem.vue";
+import Icon from '@/pages/tree/utils/Icon.vue'
 import ToolbarItem from "@/pages/tree/components/ToolbarItem.vue";
-import { useLayout } from './utils/useLayout'
-import { useRunProcess } from './utils/useRunProcess'
+// @ts-ignore
+import {useLayout} from '@/pages/tree/utils/useLayout.js'
+// @ts-ignore
+import {useRunProcess} from '@/pages/tree/utils/useRunProcess.js'
+import Header from "@/pages/tree/components/Header.vue";
+import type { Kinship as KinshipType} from "@/pages/tree/utils/types";
 
-const {onInit, onConnect, addEdges, setViewport, toObject, fitView} = useVueFlow()
-const { graph, layout } = useLayout()
+const {onInit, onConnect, addEdges, toObject, fitView} = useVueFlow()
+const {graph, layout} = useLayout()
 const cancelOnError = ref(true)
-const { run, stop, reset, isRunning } = useRunProcess({ graph, cancelOnError })
+const {stop, reset} = useRunProcess({graph, cancelOnError})
 
-const nodes = ref(initialNodes)
-const edges = ref(initialEdges)
+const nodes = ref(initialNodes.slice())
+const edges = ref(initialEdges.slice())
 const dark = ref(false)
 
 
@@ -29,59 +32,50 @@ onInit((vueFlowInstance) => {
 })
 
 onConnect((connection) => {
-  console.log('connection:',connection)
+  console.log('connection:', connection)
   addEdges(connection)
 })
-
-
-function updatePos () {
-  nodes.value = nodes.value.map((node) => {
-    return {
-      ...node,
-      position: {
-        x: Math.random() * 400,
-        y: Math.random() * 400,
-      },
-    }
-  })
-}
 
 function logToObject () {
   console.log(toObject())
 }
 
-function resetTransform () {
-  setViewport({x: 0, y: 0, zoom: 1})
-}
-
-function toggleDarkMode () {
-  dark.value = !dark.value
-}
-
-function createKinship(current) {
+function createKinship (current: KinshipType & {id: unknown, data: { label: string, toolbarPosition: string } }):void {
+  const role = current.role
   const currentId = current.id
-  const lastNode = nodes.value[nodes.value.length - 1]
-  const newId = lastNode.id + 1
+
+  const newId = Date.now().toString()
+
   nodes.value.push({
     id: newId,
     type: 'menu',
-    data: { label: 'Node 6', toolbarPosition: Position.Bottom },
-    position: { x: 0, y: 0 },
+    data: {label: current.title, toolbarPosition: Position.Bottom},
+    position: {x: 0, y: 0},
     class: 'light',
+    draggable: false,
   })
 
-  const lastEdges = edges.value[edges.value.length - 1]
-  const newIdEdge = lastEdges.id + 1
-  edges.value.push( {
-    id: 'e1-2' + newIdEdge + 1,
-    source: currentId,
-    type: 'step',
-    target: newId,
-  },)
+  if (role === 'child') {
+    const newIdEdge = newId
+    edges.value.push({
+      id: 'e1-2' + newIdEdge,
+      source: currentId,
+      type: 'step',
+      target: newId,
+    })
+  } else {
+    edges.value.push({
+      id: 'e1-2' + newId + 1,
+      source: newId,
+      type: 'step',
+      target: currentId,
+      animated: false
+    },)
+  }
 }
 
 
-async function layoutGraph(direction) {
+async function layoutGraph (direction: string) {
   await stop()
 
   reset(nodes.value)
@@ -107,8 +101,13 @@ async function layoutGraph(direction) {
     fit-view-on-init
     @nodes-initialized="layoutGraph('TD')"
   >
+    <Header/>
     <template #node-menu="props">
-      <ToolbarItem @create="createKinship" :id="props.id" :data="props.data" />
+      <ToolbarItem
+        @create="createKinship"
+        :id="props.id"
+        :data="props.data"
+      />
     </template>
 
     <Background
@@ -117,35 +116,11 @@ async function layoutGraph(direction) {
       bgColor="#d1e8ff"
     />
 
-    <Controls position="top-left">
-      <ControlButton
-        title="Reset Transform"
-        @click="resetTransform"
-      >
-        <Icon name="reset"/>
-      </ControlButton>
+    <Controls
+      class="controls"
+      position="top-left"
 
-      <ControlButton
-        title="Shuffle Node Positions"
-        @click="updatePos"
-      >
-        <Icon name="update"/>
-      </ControlButton>
-
-      <ControlButton
-        title="Toggle Dark Mode"
-        @click="toggleDarkMode"
-      >
-        <Icon
-          v-if="dark"
-          name="sun"
-        />
-        <Icon
-          v-else
-          name="moon"
-        />
-      </ControlButton>
-
+    >
       <ControlButton
         title="Log `toObject`"
         @click="logToObject"
@@ -156,14 +131,17 @@ async function layoutGraph(direction) {
   </VueFlow>
 </template>
 
-<style scoped>
+<style
+  scoped
+  lang="scss"
+>
   .basic-flow {
     width: 100%;
     height: 100vh;
   }
 </style>
 
-<style>
+<style lang="scss">
   /* import the necessary styles for Vue Flow to work */
   @import '@vue-flow/core/dist/style.css';
 
@@ -171,4 +149,13 @@ async function layoutGraph(direction) {
   @import '@vue-flow/core/dist/theme-default.css';
   @import '@vue-flow/controls/dist/style.css';
 
+  .controls > .vue-flow__controls-button {
+    width: 40px;
+    height: 25px;
+
+    & > svg {
+      max-width: 15px;
+      max-height: 15px;
+    }
+  }
 </style>

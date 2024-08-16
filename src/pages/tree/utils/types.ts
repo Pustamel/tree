@@ -1,0 +1,1 @@
+export type Kinship = {role: string, title: string}

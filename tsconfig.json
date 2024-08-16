@@ -7,5 +7,14 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["vue"],
+    "allowImportingTsExtensions": false,
+    "allowJs": false
+  }
 }
