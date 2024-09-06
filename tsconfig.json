@@ -42,13 +42,13 @@
   },
   "include": [
     "./src/**/*.tsx",
+    "auto-imports.d.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
     "**/*.spec.ts",
-    "**/*.test.ts",
-    "auto-imports.d.ts"
+    "**/*.test.ts"
   ],
   "extends": "@vue/tsconfig/tsconfig.json"
 }

@@ -1,6 +1,6 @@
 import '@/assets/main.css'
 import {createApp} from 'vue'
-import {Quasar} from 'quasar'
+import {Notify, Quasar} from 'quasar'
 import i18n from '@/app/providers/localization/config'
 import langRu from 'quasar/lang/ru'
 import App from './App.vue'
@@ -18,7 +18,9 @@ const app = createApp(App)
 app.config.globalProperties.$t = i18n.global.t
 
 app.use(Quasar, {
-  plugins: {},
+  plugins: {
+    Notify
+  },
   lang: langRu
 })
 setupStore(app)
