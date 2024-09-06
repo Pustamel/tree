@@ -1,6 +1,7 @@
 import {Notify} from "quasar";
 import {useSystemMessagesStore} from "@/stores/systemMessagesStore";
 import {computed, watch} from "vue";
+import {errorSound, successSound} from "@/shared/helpers/sound";
 
 export function useMessages () {
   const messagesStore = useSystemMessagesStore()
@@ -11,7 +12,13 @@ export function useMessages () {
   watch(messages.value, () => {
     dismiss = null
     dismiss = messages.value.map((item) => {
-    const timeMessage = 5000 // the same in Quasar
+      const timeMessage = 5000 // the same in Quasar
+
+      if (item.typeMessage === 'negative') {
+        errorSound.play().catch()
+      } else {
+        successSound.play().catch()
+      }
 
       setTimeout(() => {
         messagesStore.hideMessage(item.title)

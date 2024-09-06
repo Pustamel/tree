@@ -3,9 +3,11 @@
   lang="ts"
 >
 import {ref} from 'vue'
+import {useSystemMessagesStore} from "@/stores/systemMessagesStore";
 
 const emit = defineEmits(['update:edit'])
 const props = defineProps(['edit'])
+const messageStore = useSystemMessagesStore()
 
 const fileInputPhoto = ref(null)
 const lastName = ref('')
@@ -23,6 +25,10 @@ function triggerLoad():void {
 }
 
 function onLoadPhoto():void {}
+
+function handleSave() {
+  messageStore.addMessage({title: 'saved!', typeMessage: 'positive'})
+}
 
 </script>
 
@@ -186,6 +192,7 @@ function onLoadPhoto():void {}
           class="bg-blue-5 text-white"
           color="primary"
           v-close-popup
+          @click="handleSave"
         />
       </q-card-actions>
     </q-card>
