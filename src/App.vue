@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import {useMessages} from "@/features/systemMessages";
+
+useMessages()
+
 </script>
 
 <template>
