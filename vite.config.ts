@@ -37,5 +37,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
     extensions: ['.js', '.vue', '.json', '.ts'],
-  }
+  },
+    test: {
+        globals: true,
+        environment: 'jsdom'
+    },
 })
