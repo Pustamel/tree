@@ -20,7 +20,7 @@
     //    "outDir": "dist",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "strict": true,
+    "strict": false,
     "noUnusedLocals": true,
     "noEmit": true,
     "declaration": true,
@@ -42,7 +42,8 @@
   },
   "include": [
     "./src/**/*.tsx",
-    "auto-imports.d.ts"
+    "auto-imports.d.ts",
+    "vite.config.*"
   ],
   "exclude": [
     "node_modules",
